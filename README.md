@@ -8,6 +8,7 @@
 <hr>
 
 # Basic implementation<br>
+![img.png](img.png) <br>
 This implementation is placed in basic branch. <br>
 This implementation uses separate chaining to handle collisions, 
 and it dynamically resizes the table when the load factor exceeds a certain threshold.<br> 
@@ -31,6 +32,7 @@ In this implementation I used **_Junit 4_** for testing methods.
 <hr>
 
 # Medium implementation
+![img_1.png](img_1.png) <br>
 This implementation is placed in medium branch. <br>
 This implementation using linear probing is designed for better performance in scenarios with frequent collisions and aims for better memory efficiency due to the absence of linked lists.<br>
 It dynamically resizes the table when needed, similar to the previous implementation.
