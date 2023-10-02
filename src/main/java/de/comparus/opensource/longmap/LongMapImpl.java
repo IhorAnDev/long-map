@@ -211,8 +211,16 @@ public class LongMapImpl<V> implements LongMap<V> {
             while (entry != null) {
                 int newIndex = getIndex(entry.key, newCapacity);
                 Entry<V> next = entry.next;
-                entry.next = newTable[newIndex];
-                newTable[newIndex] = entry;
+
+                // Check if newTable[newIndex] is null and handle it accordingly
+                if (newTable[newIndex] == null) {
+                    newTable[newIndex] = entry;
+                    entry.next = null; // Make sure the current entry's next points to null (end of the list)
+                } else {
+                    entry.next = newTable[newIndex];
+                    newTable[newIndex] = entry;
+                }
+
                 entry = next;
             }
         }
