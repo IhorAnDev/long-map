@@ -24,10 +24,6 @@ public class LongMapImpl<V> implements LongMap<V> {
      * @return        the previous value associated with the key, or null if the key was not present
      */
     public V put(long key, V value) {
-        if (key == Long.MIN_VALUE) {
-            return putSpecialCase(key, value);
-        }
-
         ensureCapacity();
 
         int index = getIndex(key);
@@ -52,9 +48,6 @@ public class LongMapImpl<V> implements LongMap<V> {
      * @return      the value to which the specified key is mapped, or null if this map contains no mapping for the key
      */
     public V get(long key) {
-        if (key == Long.MIN_VALUE) {
-            return getSpecialCase(key);
-        }
 
         int index = getIndex(key);
         Entry<V> entry = table[index];
@@ -73,10 +66,6 @@ public class LongMapImpl<V> implements LongMap<V> {
      * @return      the value associated with the removed entry, or null if the key is not found
      */
     public V remove(long key) {
-        if (key == Long.MIN_VALUE) {
-            return removeSpecialCase(key);
-        }
-
         int index = getIndex(key);
         Entry<V> prev = null;
         Entry<V> entry = table[index];
@@ -239,76 +228,6 @@ public class LongMapImpl<V> implements LongMap<V> {
      */
     private int getIndex(long key, int capacity) {
         return (int) (key % capacity);
-    }
-
-    /**
-     * Handles a special case by putting the value associated with the given key in the hash table.
-     *
-     * @param  key   the key to associate with the value.
-     * @param  value the value to be associated with the key.
-     * @return       the previous value associated with the key, or null if there was no previous value.
-     */
-    private V putSpecialCase(long key, V value) {
-        // Handle Long.MIN_VALUE separately (as it cannot be negated)
-        Entry<V> entry = table[0];
-        while (entry != null) {
-            if (entry.key == key) {
-                V oldValue = entry.value;
-                entry.value = value;
-                return oldValue;
-            }
-            entry = entry.next;
-        }
-        table[0] = new Entry<>(key, value, table[0]);
-        size++;
-        return null;
-    }
-
-    /**
-     * Retrieves the value associated with the specified key in the hash table.
-     * This method is used to handle a special case when the key is Long.MIN_VALUE,
-     * as it cannot be negated. It searches for the key in the hash table and
-     * returns the corresponding value if found.
-     *
-     * @param  key  the key to search for in the hash table
-     * @return      the value associated with the key, or null if the key is not found
-     */
-    private V getSpecialCase(long key) {
-        // Handle Long.MIN_VALUE separately (as it cannot be negated)
-        Entry<V> entry = table[0];
-        while (entry != null) {
-            if (entry.key == key) {
-                return entry.value;
-            }
-            entry = entry.next;
-        }
-        return null;
-    }
-
-    /**
-     * Removes a special case entry from the table using the given key.
-     *
-     * @param  key  the key to remove the entry for
-     * @return      the value of the removed entry, or null if the key is not found
-     */
-    private V removeSpecialCase(long key) {
-        // Handle Long.MIN_VALUE separately (as it cannot be negated)
-        Entry<V> prev = null;
-        Entry<V> entry = table[0];
-        while (entry != null) {
-            if (entry.key == key) {
-                if (prev != null) {
-                    prev.next = entry.next;
-                } else {
-                    table[0] = entry.next;
-                }
-                size--;
-                return entry.value;
-            }
-            prev = entry;
-            entry = entry.next;
-        }
-        return null;
     }
 
     private static class Entry<V> {
